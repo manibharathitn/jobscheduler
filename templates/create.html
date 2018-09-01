@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Job</title>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script type="application/javascript">
+    $(document).ready(function(){
+        $.fn.serializeObject = function()
+        {
+          var o = {};
+          var a = this.serializeArray();
+          $.each(a, function() {
+            if (o[this.name] !== undefined) {
+              if (!o[this.name].push) {
+                o[this.name] = [o[this.name]];
+              }
+              o[this.name].push(this.value || '');
+            } else {
+              o[this.name] = this.value || '';
+            }
+          });
+          return o;
+        };
+
+        $('[name="type"]').change(function() {
+          currentType = $(this).val();
+          isScheduled = currentType === "SCHEDULED_JOB";
+          $('[name="event_name"]').prop("disabled", isScheduled);
+          $('[name="scheduler"]').prop("disabled", !isScheduled);
+        }).change();
+
+
+        $("#send-data").click(function(){
+            $.ajax({
+              type : "POST",
+              url : "/job",
+              contentType : "application/json",
+              data : JSON.stringify($('#job-details').serializeObject()),
+              dataType: "json",
+              success: function(data) {
+                  alert("success: " + data);
+              },
+              error: function (xhr, status, error) {
+                  alert("Failed :" + error)
+              }
+            });
+        });
+    });
+
+    </script>
+</head>
+<body>
+     <h3>Job Information</h3>
+     <form id="job-details">
+     Job Name<br>
+     <input type = "text" name = "name" /></br>
+
+     Job Type<br>
+     <select name="type">
+         {% for job_type in JobType %}
+         <option value="{{ job_type.name }}"> {{ job_type.value }}</option>
+         {% endfor %}
+     </select><br>
+
+     Priority<br>
+     <input type = "text" name = "priority" /><br>
+
+     Job Parameters<br>
+     <input type = "text" name = "params" /><br>
+
+     Event Name<br>
+     <input type = "text" name = "event_name" /><br>
+
+     Scheduler<br>
+     <input type = "text" name = "scheduler" /><br>
+     </form>
+
+     <button id="send-data">Create Job</button><br>
+   </body>
+</html>
