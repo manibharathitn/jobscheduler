@@ -8,11 +8,11 @@ from database import db_session
 
 app = Flask(__name__)
 
-@app.route('/create')
+@app.route('/job/create')
 def create():
     return render_template("create.html", JobType=JobType)
 
-@app.route('/manage')
+@app.route('/job/manage')
 def manage():
     return render_template("manage.html")
 
