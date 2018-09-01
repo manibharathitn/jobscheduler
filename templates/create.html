@@ -1,9 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Create Job</title>
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+{% extends "layout.html" %}
+{% block head_script %}
     <script type="application/javascript">
     $(document).ready(function(){
         $.fn.serializeObject = function()
@@ -26,20 +22,21 @@
         $('[name="type"]').change(function() {
           currentType = $(this).val();
           isScheduled = currentType === "SCHEDULED_JOB";
-          $('[name="event_name"]').prop("disabled", isScheduled);
-          $('[name="scheduler"]').prop("disabled", !isScheduled);
+          $('[name="event_name"]').prop("disabled", isScheduled).val(function(i, currentVal){return isScheduled ? "" : currentVal});
+          $('[name="scheduler"]').prop("disabled", !isScheduled).val(function(i, currentVal){return !isScheduled ? "" : currentVal});
         }).change();
 
-
+        var method = {% if is_edit %} "PUT" {% else %} "POST" {% endif %}
+        var urlSuffix = {% if is_edit %} "/" + {{ job.id }} {% else %} "" {% endif %}
         $("#send-data").click(function(){
             $.ajax({
-              type : "POST",
-              url : "/job",
+              type : method,
+              url : "/job" + urlSuffix,
               contentType : "application/json",
               data : JSON.stringify($('#job-details').serializeObject()),
               dataType: "json",
               success: function(data) {
-                  alert("success: " + data);
+                  alert("Saved successfully!");
               },
               error: function (xhr, status, error) {
                   alert("Failed :" + error)
@@ -47,35 +44,34 @@
             });
         });
     });
-
     </script>
-</head>
-<body>
+{% endblock %}
+{% block title %}{% if not is_edit %}Create {% else %}Edit {% endif %} {% endblock %}
+{% block content %}
      <h3>Job Information</h3>
      <form id="job-details">
      Job Name<br>
-     <input type = "text" name = "name" /></br>
+     <input type = "text" name = "name" {% if is_edit %} value = "{{ job.name }}" {% endif %} /></br>
 
      Job Type<br>
      <select name="type">
          {% for job_type in JobType %}
-         <option value="{{ job_type.name }}"> {{ job_type.value }}</option>
+         <option value="{{ job_type.name }}" {% if is_edit and job_type.name == job.type %} selected {% endif %}> {{ job_type.value }}</option>
          {% endfor %}
      </select><br>
 
      Priority<br>
-     <input type = "text" name = "priority" /><br>
+     <input type = "text" name = "priority" {% if is_edit %} value = "{{ job.priority }}" {% endif %}/><br>
 
      Job Parameters<br>
-     <input type = "text" name = "params" /><br>
+     <input type = "text" name = "params" {% if is_edit %} value = "{{ job.params }}" {% endif %}/><br>
 
      Event Name<br>
-     <input type = "text" name = "event_name" /><br>
+     <input type = "text" name = "event_name" {% if is_edit %} value = "{{ job.event_name }}" {% endif %}/><br>
 
      Scheduler<br>
-     <input type = "text" name = "scheduler" /><br>
+     <input type = "text" name = "scheduler" {% if is_edit %} value = "{{ job.scheduler }}" {% endif %}/><br>
      </form>
 
      <button id="send-data">Create Job</button><br>
-   </body>
-</html>
+{% endblock %}

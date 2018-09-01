@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <title>{% block title %}{% endblock %} - Job Scheduler</title>
+    {% block head_script %}
+    {% endblock %}
+  </head>
+  <body>
+    <div id="content">
+        <h2>{{ self.title() }} - Job Scheduler</h2>
+        {% block content %}{% endblock %}
+    </div>
+    <div id="footer">
+      {% block footer %}<br />
+      &copy; Copyright 2018 by <a href="https://www.linkedin.com/in/manitn/">Mani</a>.
+      {% endblock %}
+    </div>
+  </body>
+</html>
